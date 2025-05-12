@@ -72,9 +72,9 @@ public class BomberoService {
         return bomberoRepository.save(bombero);
     }
 
+
     public void delete(long id){
         bomberoRepository.deleteById(id);
     }
-
 
 }
