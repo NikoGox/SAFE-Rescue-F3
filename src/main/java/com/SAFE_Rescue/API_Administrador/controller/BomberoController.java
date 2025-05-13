@@ -19,6 +19,7 @@ public class BomberoController {
 
     @GetMapping
     public ResponseEntity<List<Bombero>> listar(){
+
         List<Bombero> bomberos = bomberoService.findAll();
         if(bomberos.isEmpty()){
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
@@ -26,11 +27,21 @@ public class BomberoController {
         return ResponseEntity.ok(bomberos);
     }
 
-    @ResponseStatus(HttpStatus.CREATED)//Colocar el codigo 201
     @PostMapping
-    public ResponseEntity<Bombero> agregarBombero(@RequestBody Bombero bombero){
-        Bombero nuevoBombero = bomberoService.save(bombero);
-        return ResponseEntity.status(HttpStatus.CREATED).body(nuevoBombero);
+    public ResponseEntity<String> agregarBombero(@RequestBody Bombero bombero) {
+        try {
+            bomberoService.validarBombero(bombero);
+            Bombero nuevoBombero = bomberoService.save(bombero);
+            return ResponseEntity.status(HttpStatus.CREATED).body("Bombero creado con éxito.");
+        } catch (RuntimeException e) {
+            // Captura la excepción y devuelve el mensaje de error del servicio
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(e.getMessage()); // Devuelve el mensaje de error
+        } catch (Exception e) {
+            // Manejar otros errores
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error interno del servidor.");
+        }
     }
 
     @GetMapping("/{id}")
@@ -38,15 +49,14 @@ public class BomberoController {
         return bomberoService.findByID(id);
     }
 
-    @PutMapping()
+    @PutMapping("/{id}")
     public Bombero actualizarBombero(@RequestBody Bombero bombero){
         return bomberoService.save(bombero);
     }
 
     @DeleteMapping("/{id}")
-    public void eliminarBombero(@PathVariable long id){
+    public ResponseEntity<String> eliminarBombero(@PathVariable long id) {
         bomberoService.delete(id);
+        return ResponseEntity.ok("Bombero eliminado con éxito.");
     }
-
-
 }
