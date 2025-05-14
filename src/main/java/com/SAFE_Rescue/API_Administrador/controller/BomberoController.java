@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 
 @RestController
 @RequestMapping("/api/v1/bomberos")
@@ -45,23 +46,28 @@ public class BomberoController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Bombero> buscarBombero(@PathVariable long id){
+    public ResponseEntity<?> buscarBombero(@PathVariable long id) {
+        Bombero bombero;
 
-        Bombero bombero= bomberoService.findByID(id);
-
-        if(bombero==null){
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        try {
+            bombero = bomberoService.findByID(id);
+        }catch(NoSuchElementException e){
+            return new ResponseEntity<String>("Bombero no encontrado", HttpStatus.NOT_FOUND);
         }
+
         return ResponseEntity.ok(bombero);
 
     }
 
-    @PutMapping()
-    public ResponseEntity<String> actualizarBombero(@RequestBody Bombero bombero){
+
+    @PutMapping("/{id}")
+    public ResponseEntity<String> actualizarBombero(@PathVariable long id, @RequestBody Bombero bombero) {
         try {
-            bomberoService.validarBombero(bombero);
-            Bombero nuevoBombero = bomberoService.save(bombero);
+            Bombero nuevoBombero = bomberoService.update(bombero, id);
             return ResponseEntity.ok("Actualizado con éxito");
+        } catch (NoSuchElementException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body("Bombero no encontrado");
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(e.getMessage());
