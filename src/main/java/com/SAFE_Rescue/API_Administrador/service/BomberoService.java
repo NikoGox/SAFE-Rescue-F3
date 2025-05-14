@@ -116,7 +116,6 @@ public class BomberoService {
         }
     }
 
-
     public void delete(long id){
         try {
             bomberoRepository.deleteById(id);
@@ -168,9 +167,6 @@ public class BomberoService {
             throw new RuntimeException("El valor telefono excede máximo de caracteres (9)");
         }
 
-        if (bombero.getContrasenia().length() > 16) {
-            throw new RuntimeException("El valor contrasenia excede máximo de caracteres (16)");
-        }
     }
 
 }

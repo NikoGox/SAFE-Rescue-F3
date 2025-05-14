@@ -42,7 +42,8 @@ public class Bombero {
     @Column(unique = true,length = 9,nullable = false)
     private Long telefono;
 
-    @Column(length = 16,nullable = false)
-    private String contrasenia;
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "credenciales_id", referencedColumnName = "id")
+    private Credencial credencial;
 
 }
