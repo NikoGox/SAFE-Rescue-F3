@@ -35,11 +35,10 @@ public class BomberoController {
             Bombero nuevoBombero = bomberoService.save(bombero);
             return ResponseEntity.status(HttpStatus.CREATED).body("Bombero creado con éxito.");
         } catch (RuntimeException e) {
-            // Captura la excepción y devuelve el mensaje de error del servicio
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(e.getMessage()); // Devuelve el mensaje de error
+                    .body(e.getMessage());
         } catch (Exception e) {
-            // Manejar otros errores
+
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("Error interno del servidor.");
         }
