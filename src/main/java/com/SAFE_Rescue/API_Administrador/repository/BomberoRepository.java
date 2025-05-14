@@ -9,10 +9,10 @@ import java.util.List;
 @Repository
 public interface BomberoRepository extends JpaRepository<Bombero , Long> {
 
-    public boolean existsByRun(int run);
+    public boolean existsByRun(Long run);
 
     public boolean existsByCorreo(String correo);
 
-    public boolean existsByTelefono(int telefono);
+    public boolean existsByTelefono(Long telefono);
 
 }

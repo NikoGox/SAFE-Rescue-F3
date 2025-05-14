@@ -19,7 +19,7 @@ public class Bombero {
     private int id;
 
     @Column(unique = true,length = 8,nullable = false)
-    private int run;
+    private Long run;
 
     @Column(length = 1,nullable = false)
     private String dv;
@@ -40,7 +40,7 @@ public class Bombero {
     private String correo;
 
     @Column(unique = true,length = 9,nullable = false)
-    private int telefono;
+    private Long telefono;
 
     @Column(length = 16,nullable = false)
     private String contrasenia;
