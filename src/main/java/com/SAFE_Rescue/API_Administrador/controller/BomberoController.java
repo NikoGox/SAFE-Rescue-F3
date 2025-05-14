@@ -45,17 +45,35 @@ public class BomberoController {
     }
 
     @GetMapping("/{id}")
-    public Bombero buscarBombero(@PathVariable long id){
-        return bomberoService.findByID(id);
+    public ResponseEntity<Bombero> buscarBombero(@PathVariable long id){
+
+        Bombero bombero= bomberoService.findByID(id);
+
+        if(bombero==null){
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }
+        return ResponseEntity.ok(bombero);
+
     }
 
-    @PutMapping("/{id}")
-    public Bombero actualizarBombero(@RequestBody Bombero bombero){
-        return bomberoService.save(bombero);
+    @PutMapping()
+    public ResponseEntity<String> actualizarBombero(@RequestBody Bombero bombero){
+        try {
+            bomberoService.validarBombero(bombero);
+            Bombero nuevoBombero = bomberoService.save(bombero);
+            return ResponseEntity.ok("Actualizado con éxito");
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error interno del servidor.");
+        }
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<String> eliminarBombero(@PathVariable long id) {
+
         bomberoService.delete(id);
         return ResponseEntity.ok("Bombero eliminado con éxito.");
     }

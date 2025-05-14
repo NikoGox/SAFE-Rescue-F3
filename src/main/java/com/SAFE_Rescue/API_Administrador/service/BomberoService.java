@@ -35,9 +35,52 @@ public class BomberoService {
         }
     }
 
+    public Bombero update(Bombero bombero, long id) {
+        try {
+            validarBombero(bombero);
+
+            Bombero antiguoBombero = bomberoRepository.findById(id)
+                    .orElseThrow(() -> new RuntimeException("Bombero no encontrado"));
+
+            if (bombero.getNombre() != null) {
+                antiguoBombero.setNombre(bombero.getNombre());
+            }
+            if (bombero.getCorreo() != null) {
+                antiguoBombero.setCorreo(bombero.getCorreo());
+            }
+            if (bombero.getTelefono() != null) {
+                antiguoBombero.setTelefono(bombero.getTelefono());
+            }
+            if (bombero.getRun() != null) {
+                antiguoBombero.setRun(bombero.getRun());
+            }
+            if (bombero.getDv() != null) {
+                antiguoBombero.setDv(bombero.getDv());
+            }
+            if (bombero.getA_paterno() != null) {
+                antiguoBombero.setA_paterno(bombero.getA_paterno());
+            }
+            if (bombero.getA_materno() != null) {
+                antiguoBombero.setA_materno(bombero.getA_materno());
+            }
+            if (bombero.getFecha_registro() != null) {
+                antiguoBombero.setFecha_registro(bombero.getFecha_registro());
+            }
+
+            return bomberoRepository.save(antiguoBombero);
+        } catch (Exception e) {
+            throw new RuntimeException("Error al actualizar el bombero: " + e.getMessage());
+        }
+    }
+
 
     public void delete(long id){
-        bomberoRepository.deleteById(id);
+        try {
+            bomberoRepository.deleteById(id);
+
+        } catch (Exception e) {
+            throw new RuntimeException("Error al encontrar bombero: " + e.getMessage());
+        }
     }
 
     public void validarBombero(@NotNull Bombero bombero) {
@@ -54,38 +97,37 @@ public class BomberoService {
             throw new RuntimeException("El Telefono ya existe");
         }
 
-        if (bombero.getRun()<9) {
-            throw new RuntimeException("El valor run excede máximo de carácteres (8)");
+        if (String.valueOf(bombero.getRun()).length() > 8) {
+            throw new RuntimeException("El valor RUN excede máximo de caracteres (8)");
         }
 
-        if (bombero.getDv().length()>2) {
-            throw new RuntimeException("El valor dv excede máximo de carácteres (1)");
+        if (bombero.getDv().length() > 1) {
+            throw new RuntimeException("El valor DV excede máximo de caracteres (1)");
         }
 
-        if (bombero.getNombre().length()>51) {
-            throw new RuntimeException("El valor nombre excede máximo de carácteres (50)");
+        if (bombero.getNombre().length() > 50) {
+            throw new RuntimeException("El valor nombre excede máximo de caracteres (50)");
         }
 
-        if (bombero.getA_paterno().length()>51) {
-            throw new RuntimeException("El valor a_paterno excede máximo de carácteres (50)");
+        if (bombero.getA_paterno().length() > 50) {
+            throw new RuntimeException("El valor a_paterno excede máximo de caracteres (50)");
         }
 
-        if (bombero.getA_materno().length()>51) {
-            throw new RuntimeException("El valor a_materno excede máximo de carácteres (50)");
+        if (bombero.getA_materno().length() > 50) {
+            throw new RuntimeException("El valor a_materno excede máximo de caracteres (50)");
         }
 
-        if (bombero.getCorreo().length()>81) {
-            throw new RuntimeException("El valor correo excede máximo de carácteres (80)");
+        if (bombero.getCorreo().length() > 80) {
+            throw new RuntimeException("El valor correo excede máximo de caracteres (80)");
         }
 
-        if (bombero.getTelefono()<11) {
-            throw new RuntimeException("El valor telefono excede máximo de carácteres (9)");
+        if (String.valueOf(bombero.getTelefono()).length()> 9) {
+            throw new RuntimeException("El valor telefono excede máximo de caracteres (9)");
         }
 
-        if (bombero.getContrasenia().length()>=17) {
-            throw new RuntimeException("El valor contrasenia excede máximo de carácteres (10)");
+        if (bombero.getContrasenia().length() > 16) {
+            throw new RuntimeException("El valor contrasenia excede máximo de caracteres (16)");
         }
-
     }
 
 }
