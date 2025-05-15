@@ -1,5 +1,6 @@
 package com.SAFE_Rescue.API_Administrador.controller;
 
+import com.SAFE_Rescue.API_Administrador.modelo.Rol;
 import com.SAFE_Rescue.API_Administrador.service.CredencialService;
 import com.SAFE_Rescue.API_Administrador.modelo.Credencial;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,10 +29,9 @@ public class CredencialController {
     }
 
     @PostMapping
-    public ResponseEntity<String> agregarCredencial(@RequestBody Credencial credencial) {
+    public ResponseEntity<String> agregarCredencial(@RequestBody Credencial credencial, Rol rol) {
         try {
-            credencialService.validarCredencial(credencial);
-            Credencial nuevaCredencial = credencialService.save(credencial);
+            Credencial nuevaCredencial = credencialService.save(credencial, rol);
             return ResponseEntity.status(HttpStatus.CREATED).body("Credencial creada con éxito.");
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
@@ -81,5 +81,26 @@ public class CredencialController {
         return ResponseEntity.ok("Credencial eliminada con éxito.");
     }
 
+    @PostMapping("/login")
+    public ResponseEntity<String> login(@RequestParam String correo, @RequestParam String password) {
+
+        boolean isAuthenticated = credencialService.verificarCredenciales(correo, password);
+
+        if (isAuthenticated) {
+            return ResponseEntity.ok("Login exitoso");
+        } else {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Credenciales incorrectas");
+        }
+    }
+
+    @PostMapping("/{credencialId}/asignar-rol/{rolId}")
+    public ResponseEntity<String> asignarRol(@PathVariable int credencialId,@PathVariable int rolId) {
+        try {
+            credencialService.asignarRol(credencialId,rolId);
+            return ResponseEntity.ok("Rol asignada al credencial exitosamente");
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        }
+    }
 
 }

@@ -1,7 +1,10 @@
 package com.SAFE_Rescue.API_Administrador.service;
 
+import com.SAFE_Rescue.API_Administrador.modelo.Credencial;
+import com.SAFE_Rescue.API_Administrador.modelo.Rol;
 import com.SAFE_Rescue.API_Administrador.repository.BomberoRepository;
 import com.SAFE_Rescue.API_Administrador.modelo.Bombero;
+import com.SAFE_Rescue.API_Administrador.repository.CredencialRepository;
 import jakarta.transaction.Transactional;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +20,12 @@ public class BomberoService {
     @Autowired
     private BomberoRepository bomberoRepository;
 
+    @Autowired
+    private CredencialService credencialService;
+
+    @Autowired
+    private CredencialRepository credencialRepository;
+
     public List<Bombero> findAll(){
         return bomberoRepository.findAll();
     }
@@ -25,13 +34,16 @@ public class BomberoService {
         return bomberoRepository.findById(id).get();
     }
 
-    public Bombero save(Bombero bombero) {
+    public Bombero save(Bombero bombero, Credencial credencial, Rol rol) {
         try {
             validarBombero(bombero);
 
+            Credencial guardadaCredencial = credencialService.save(credencial, rol);
+
+            asignarCredencial(bombero.getId(), guardadaCredencial.getId());
+
             return bomberoRepository.save(bombero);
         } catch (Exception e) {
-
             throw new RuntimeException("Error al guardar el bombero: " + e.getMessage());
         }
     }
@@ -48,17 +60,6 @@ public class BomberoService {
                     throw new RuntimeException("El valor nombre excede máximo de caracteres (50)");
                 }
                 antiguoBombero.setNombre(bombero.getNombre());
-            }
-
-            if (bombero.getCorreo() != null) {
-                if (bomberoRepository.existsByCorreo(bombero.getCorreo())) {
-                    throw new RuntimeException("El Correo ya existe");
-                }else{
-                    if (bombero.getCorreo().length() > 80) {
-                        throw new RuntimeException("El valor correo excede máximo de caracteres (80)");
-                    }
-                    antiguoBombero.setCorreo(bombero.getCorreo());
-                }
             }
 
             if (bombero.getTelefono() != null) {
@@ -131,10 +132,6 @@ public class BomberoService {
             throw new RuntimeException("El RUN ya existe");
         }
 
-        if (bomberoRepository.existsByCorreo(bombero.getCorreo())) {
-            throw new RuntimeException("El Correo ya existe");
-        }
-
         if (bomberoRepository.existsByTelefono(bombero.getTelefono())) {
             throw new RuntimeException("El Telefono ya existe");
         }
@@ -159,14 +156,21 @@ public class BomberoService {
             throw new RuntimeException("El valor a_materno excede máximo de caracteres (50)");
         }
 
-        if (bombero.getCorreo().length() > 80) {
-            throw new RuntimeException("El valor correo excede máximo de caracteres (80)");
-        }
-
         if (String.valueOf(bombero.getTelefono()).length()> 9) {
             throw new RuntimeException("El valor telefono excede máximo de caracteres (9)");
         }
 
+    }
+
+    public void asignarCredencial(long bomberoId, long credencialId) {
+        Bombero bombero = bomberoRepository.findById(bomberoId)
+                .orElseThrow(() -> new RuntimeException("Bombero no encontrado"));
+
+        Credencial credencial = credencialRepository.findById(credencialId)
+                .orElseThrow(() -> new RuntimeException("Credencial no encontrada"));
+
+        bombero.setCredencial(credencial);
+        bomberoRepository.save(bombero);
     }
 
 }

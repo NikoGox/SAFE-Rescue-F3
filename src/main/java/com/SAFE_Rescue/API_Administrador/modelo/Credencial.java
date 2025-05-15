@@ -16,18 +16,19 @@ public class Credencial {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
+    @Column(unique = true,length = 80,nullable = false)
+    private String correo;
+
     @Column(length = 16, nullable = false)
     private String contrasenia;
 
-    @Column
+    @Column(length = 1, nullable = true)
     private int intentosFallidos = 0;
 
+    @Column(nullable = false)
+    private boolean activo = true;
 
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "estado_id", referencedColumnName = "id")
-    private Estado estado;
-
-    @OneToOne(cascade = CascadeType.ALL)
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "rol_id", referencedColumnName = "id")
     private Rol rol;
 

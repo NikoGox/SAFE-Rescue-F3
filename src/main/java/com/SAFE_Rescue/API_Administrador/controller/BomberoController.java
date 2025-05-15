@@ -1,5 +1,8 @@
 package com.SAFE_Rescue.API_Administrador.controller;
 
+import com.SAFE_Rescue.API_Administrador.modelo.BomberoFull;
+import com.SAFE_Rescue.API_Administrador.modelo.Credencial;
+import com.SAFE_Rescue.API_Administrador.modelo.Rol;
 import com.SAFE_Rescue.API_Administrador.service.BomberoService;
 import com.SAFE_Rescue.API_Administrador.modelo.Bombero;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,10 +31,14 @@ public class BomberoController {
     }
 
     @PostMapping
-    public ResponseEntity<String> agregarBombero(@RequestBody Bombero bombero) {
+    public ResponseEntity<String> agregarBombero(@RequestBody BomberoFull bomberoFull) {
         try {
+            Bombero bombero = bomberoFull.getBombero();
+            Credencial credencial = bomberoFull.getCredencial();
+            Rol rol = bomberoFull.getRol();
+
             bomberoService.validarBombero(bombero);
-            Bombero nuevoBombero = bomberoService.save(bombero);
+            Bombero nuevoBombero = bomberoService.save(bombero, credencial,rol);
             return ResponseEntity.status(HttpStatus.CREATED).body("Bombero creado con éxito.");
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
@@ -42,6 +49,7 @@ public class BomberoController {
                     .body("Error interno del servidor.");
         }
     }
+
 
     @GetMapping("/{id}")
     public ResponseEntity<?> buscarBombero(@PathVariable long id) {
@@ -80,5 +88,15 @@ public class BomberoController {
 
         bomberoService.delete(id);
         return ResponseEntity.ok("Bombero eliminado con éxito.");
+    }
+
+    @PostMapping("/{bomberoId}/asignar-credencial/{credencialId}")
+    public ResponseEntity<String> asignarCredencial(@PathVariable int bomberoId, @PathVariable int credencialId) {
+        try {
+            bomberoService.asignarCredencial(bomberoId, credencialId);
+            return ResponseEntity.ok("Credencial asignada al bombero exitosamente");
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        }
     }
 }
