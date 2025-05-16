@@ -1,7 +1,7 @@
 package com.SAFE_Rescue.API_Administrador.service;
 
-import com.SAFE_Rescue.API_Administrador.repository.BomberoRepository;
 import com.SAFE_Rescue.API_Administrador.modelo.Bombero;
+import com.SAFE_Rescue.API_Administrador.repository.BomberoRepository;
 import jakarta.transaction.Transactional;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
