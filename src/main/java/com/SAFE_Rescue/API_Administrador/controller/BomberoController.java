@@ -1,8 +1,5 @@
 package com.SAFE_Rescue.API_Administrador.controller;
 
-import com.SAFE_Rescue.API_Administrador.modelo.BomberoFull;
-import com.SAFE_Rescue.API_Administrador.modelo.Credencial;
-import com.SAFE_Rescue.API_Administrador.modelo.Rol;
 import com.SAFE_Rescue.API_Administrador.service.BomberoService;
 import com.SAFE_Rescue.API_Administrador.modelo.Bombero;
 import org.springframework.beans.factory.annotation.Autowired;
