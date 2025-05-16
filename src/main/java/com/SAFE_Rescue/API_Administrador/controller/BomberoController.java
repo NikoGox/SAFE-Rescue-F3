@@ -31,14 +31,11 @@ public class BomberoController {
     }
 
     @PostMapping
-    public ResponseEntity<String> agregarBombero(@RequestBody BomberoFull bomberoFull) {
+    public ResponseEntity<String> agregarBombero(@RequestBody Bombero bombero) {
         try {
-            Bombero bombero = bomberoFull.getBombero();
-            Credencial credencial = bomberoFull.getCredencial();
-            Rol rol = bomberoFull.getRol();
 
             bomberoService.validarBombero(bombero);
-            Bombero nuevoBombero = bomberoService.save(bombero, credencial,rol);
+            Bombero nuevoBombero = bomberoService.save(bombero);
             return ResponseEntity.status(HttpStatus.CREATED).body("Bombero creado con éxito.");
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
