@@ -1,6 +1,6 @@
 package com.SAFE_Rescue.API_Administrador.controller;
 
-import com.SAFE_Rescue.API_Administrador.modelo.Rol;
+import com.SAFE_Rescue.API_Administrador.modelo.Login;
 import com.SAFE_Rescue.API_Administrador.service.CredencialService;
 import com.SAFE_Rescue.API_Administrador.modelo.Credencial;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,16 +29,14 @@ public class CredencialController {
     }
 
     @PostMapping
-    public ResponseEntity<String> agregarCredencial(@RequestBody Credencial credencial, Rol rol) {
+    public ResponseEntity<String> agregarCredencial(@RequestBody Credencial credencial) {
         try {
-            Credencial nuevaCredencial = credencialService.save(credencial, rol);
+            credencialService.save(credencial);
             return ResponseEntity.status(HttpStatus.CREATED).body("Credencial creada con éxito.");
         } catch (RuntimeException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Error interno del servidor.");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error interno del servidor.");
         }
     }
 
@@ -82,9 +80,8 @@ public class CredencialController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<String> login(@RequestParam String correo, @RequestParam String password) {
-
-        boolean isAuthenticated = credencialService.verificarCredenciales(correo, password);
+    public ResponseEntity<String> login(@RequestBody Login login) {
+        boolean isAuthenticated = credencialService.verificarCredenciales(login.getCorreo(), login.getContrasenia());
 
         if (isAuthenticated) {
             return ResponseEntity.ok("Login exitoso");

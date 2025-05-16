@@ -4,8 +4,10 @@ import com.SAFE_Rescue.API_Administrador.modelo.Rol;
 import com.SAFE_Rescue.API_Administrador.repository.CredencialRepository;
 import com.SAFE_Rescue.API_Administrador.modelo.Credencial;
 import com.SAFE_Rescue.API_Administrador.repository.RolRepository;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
 
@@ -31,19 +33,20 @@ public class CredencialService {
     }
 
 
-    public Credencial save(Credencial credencial, Rol rol) {
+    public Credencial save(Credencial credencial) {
         try {
-            if (!rolRepository.existsById(rol.getId())) {
-                throw new RuntimeException("Rol no encontrado");
-            }else{
-                Credencial savedCredencial = credencialRepository.save(credencial);
+            Rol rol = rolRepository.findById(credencial.getRol().getId())
+                    .orElseThrow(() -> new RuntimeException("Rol no encontrado"));
 
-                asignarRol(rol.getId(), savedCredencial.getId());
-                return savedCredencial;
-            }
-        } catch (Exception e) {
+            credencial.setRol(rol);
 
+            return credencialRepository.save(credencial);
+        } catch (DataIntegrityViolationException e) {
+            throw new RuntimeException("El correo ya está en uso. Por favor, use otro.");
+        } catch (EntityNotFoundException e) {
             throw new RuntimeException("Error al guardar la credencial: " + e.getMessage());
+        } catch (Exception e) {
+            throw new RuntimeException("Error inesperado: " + e.getMessage());
         }
     }
 
@@ -95,15 +98,21 @@ public class CredencialService {
         }
     }
 
-    public boolean verificarCredenciales(String correo, String password) {
+    public boolean verificarCredenciales(String correo, String contrasenia) {
         Credencial credencial = credencialRepository.findByCorreo(correo);
         if (credencial != null) {
-            return password.equals(credencial.getContrasenia());
+            boolean sonCorrectas = contrasenia.equals(credencial.getContrasenia());
+            if (!sonCorrectas) {
+                credencial.setIntentosFallidos(credencial.getIntentosFallidos() + 1);
+                credencialRepository.save(credencial);
+            }
+            return sonCorrectas;
         }
         return false;
     }
 
-    public void asignarRol(int rolId, long credencialId) {
+
+    public void asignarRol(long credencialId,int rolId) {
         Rol rol = rolRepository.findById(rolId)
                 .orElseThrow(() -> new RuntimeException("Rol no encontrado"));
 

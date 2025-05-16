@@ -5,9 +5,11 @@ import com.SAFE_Rescue.API_Administrador.modelo.Rol;
 import com.SAFE_Rescue.API_Administrador.repository.BomberoRepository;
 import com.SAFE_Rescue.API_Administrador.modelo.Bombero;
 import com.SAFE_Rescue.API_Administrador.repository.CredencialRepository;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -34,17 +36,23 @@ public class BomberoService {
         return bomberoRepository.findById(id).get();
     }
 
-    public Bombero save(Bombero bombero, Credencial credencial, Rol rol) {
+    public Bombero save(Bombero bombero) {
         try {
+            Credencial credencial = bombero.getCredencial();
+
             validarBombero(bombero);
 
-            Credencial guardadaCredencial = credencialService.save(credencial, rol);
+            Credencial guardadaCredencial = credencialService.save(credencial);
 
-            asignarCredencial(bombero.getId(), guardadaCredencial.getId());
+            bombero.setCredencial(guardadaCredencial);
 
             return bomberoRepository.save(bombero);
-        } catch (Exception e) {
+        } catch (DataIntegrityViolationException e) {
+            throw new RuntimeException("Error: el correo de la credencial ya está en uso.");
+        } catch (EntityNotFoundException e) {
             throw new RuntimeException("Error al guardar el bombero: " + e.getMessage());
+        } catch (Exception e) {
+            throw new RuntimeException("Error inesperado: " + e.getMessage());
         }
     }
 
