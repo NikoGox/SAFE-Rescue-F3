@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.NoSuchElementException;
 
 @RestController
-@RequestMapping("/api/v1/credenciales")
+@RequestMapping("/api-administrador/v1/credenciales")
 public class CredencialController {
 
     @Autowired
@@ -75,8 +75,20 @@ public class CredencialController {
     @DeleteMapping("/{id}")
     public ResponseEntity<String> eliminarCredencial(@PathVariable long id) {
 
-        credencialService.delete(id);
-        return ResponseEntity.ok("Credencial eliminada con éxito.");
+        try {
+            credencialService.delete(id);
+            return ResponseEntity.ok("Credencial eliminada con éxito.");
+        } catch (NoSuchElementException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body("Credencial no encontrada");
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error interno del servidor.");
+        }
+
     }
 
     @PostMapping("/login")

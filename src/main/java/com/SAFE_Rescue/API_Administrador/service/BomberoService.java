@@ -127,6 +127,10 @@ public class BomberoService {
 
     public void delete(long id){
         try {
+            if (!bomberoRepository.existsById(id)) {
+                throw new NoSuchElementException("Bombero no encontrado");
+            }
+
             bomberoRepository.deleteById(id);
 
         } catch (Exception e) {

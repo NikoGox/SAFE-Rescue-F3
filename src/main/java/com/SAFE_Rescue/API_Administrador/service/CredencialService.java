@@ -74,6 +74,8 @@ public class CredencialService {
                 }
             }
 
+            antiguaCredencial.setActivo(credencial.isActivo());
+
             return credencialRepository.save(antiguaCredencial);
 
         } catch (Exception e) {
@@ -83,6 +85,10 @@ public class CredencialService {
 
     public void delete(long id){
         try {
+            if (!credencialRepository.existsById(id)) {
+                throw new NoSuchElementException("Credencial no encontrada");
+            }
+
             Credencial credencialVacia = credencialRepository.findById(id).get();
 
             credencialVacia.setContrasenia("");

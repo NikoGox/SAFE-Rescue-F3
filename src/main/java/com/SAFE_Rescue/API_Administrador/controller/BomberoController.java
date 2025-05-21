@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.NoSuchElementException;
 
 @RestController
-@RequestMapping("/api/v1/bomberos")
+@RequestMapping("/api-administrador/v1/bomberos")
 public class BomberoController {
 
     @Autowired
@@ -80,8 +80,20 @@ public class BomberoController {
     @DeleteMapping("/{id}")
     public ResponseEntity<String> eliminarBombero(@PathVariable long id) {
 
-        bomberoService.delete(id);
-        return ResponseEntity.ok("Bombero eliminado con éxito.");
+        try {
+            bomberoService.delete(id);
+            return ResponseEntity.ok("Bombero eliminado con éxito.");
+        } catch (NoSuchElementException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body("Bombero no encontrado");
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error interno del servidor.");
+        }
+
     }
 
     @PostMapping("/{bomberoId}/asignar-credencial/{credencialId}")
