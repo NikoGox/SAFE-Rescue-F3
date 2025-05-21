@@ -1,8 +1,8 @@
-package com.SAFE_Rescue.API_Administrador.controller;
+package com.SAFE_Rescue.API_Ciudadano.controller;
 
-import com.SAFE_Rescue.API_Administrador.modelo.Login;
-import com.SAFE_Rescue.API_Administrador.service.CredencialService;
-import com.SAFE_Rescue.API_Administrador.modelo.Credencial;
+import com.SAFE_Rescue.API_Ciudadano.modelo.Login;
+import com.SAFE_Rescue.API_Ciudadano.service.CredencialService;
+import com.SAFE_Rescue.API_Ciudadano.modelo.Credencial;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.NoSuchElementException;
 
 @RestController
-@RequestMapping("/api-administrador/v1/credenciales")
+@RequestMapping("/api-ciudadano/v1/credenciales")
 public class CredencialController {
 
     @Autowired
@@ -75,20 +75,8 @@ public class CredencialController {
     @DeleteMapping("/{id}")
     public ResponseEntity<String> eliminarCredencial(@PathVariable long id) {
 
-        try {
-            credencialService.delete(id);
-            return ResponseEntity.ok("Credencial eliminada con éxito.");
-        } catch (NoSuchElementException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body("Credencial no encontrada");
-        } catch (RuntimeException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(e.getMessage());
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Error interno del servidor.");
-        }
-
+        credencialService.delete(id);
+        return ResponseEntity.ok("Credencial eliminada con éxito.");
     }
 
     @PostMapping("/login")
@@ -102,14 +90,5 @@ public class CredencialController {
         }
     }
 
-    @PostMapping("/{credencialId}/asignar-rol/{rolId}")
-    public ResponseEntity<String> asignarRol(@PathVariable int credencialId,@PathVariable int rolId) {
-        try {
-            credencialService.asignarRol(credencialId,rolId);
-            return ResponseEntity.ok("Rol asignada al credencial exitosamente");
-        } catch (RuntimeException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
-        }
-    }
 
 }

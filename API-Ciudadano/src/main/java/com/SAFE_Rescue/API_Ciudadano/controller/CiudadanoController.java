@@ -1,7 +1,7 @@
-package com.SAFE_Rescue.API_Administrador.controller;
+package com.SAFE_Rescue.API_Ciudadano.controller;
 
-import com.SAFE_Rescue.API_Administrador.service.BomberoService;
-import com.SAFE_Rescue.API_Administrador.modelo.Bombero;
+import com.SAFE_Rescue.API_Ciudadano.service.CiudadanoService;
+import com.SAFE_Rescue.API_Ciudadano.modelo.Ciudadano;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -11,29 +11,29 @@ import java.util.List;
 import java.util.NoSuchElementException;
 
 @RestController
-@RequestMapping("/api-administrador/v1/bomberos")
-public class BomberoController {
+@RequestMapping("/api-ciudadano/v1/ciudadanos")
+public class CiudadanoController {
 
     @Autowired
-    private BomberoService bomberoService;
+    private CiudadanoService ciudadanoService;
 
     @GetMapping
-    public ResponseEntity<List<Bombero>> listar(){
+    public ResponseEntity<List<Ciudadano>> listar(){
 
-        List<Bombero> bomberos = bomberoService.findAll();
-        if(bomberos.isEmpty()){
+        List<Ciudadano> ciudadanos = ciudadanoService.findAll();
+        if(ciudadanos.isEmpty()){
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }
-        return ResponseEntity.ok(bomberos);
+        return ResponseEntity.ok(ciudadanos);
     }
 
     @PostMapping
-    public ResponseEntity<String> agregarBombero(@RequestBody Bombero bombero) {
+    public ResponseEntity<String> agregarCiudadano(@RequestBody Ciudadano ciudadano) {
         try {
 
-            bomberoService.validarBombero(bombero);
-            Bombero nuevoBombero = bomberoService.save(bombero);
-            return ResponseEntity.status(HttpStatus.CREATED).body("Bombero creado con éxito.");
+            ciudadanoService.validarCiudadano(ciudadano);
+            Ciudadano nuevoCiudadano = ciudadanoService.save(ciudadano);
+            return ResponseEntity.status(HttpStatus.CREATED).body("Ciudadano creado con éxito.");
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(e.getMessage());
@@ -46,28 +46,27 @@ public class BomberoController {
 
 
     @GetMapping("/{id}")
-    public ResponseEntity<?> buscarBombero(@PathVariable long id) {
-        Bombero bombero;
+    public ResponseEntity<?> buscarCiudadano(@PathVariable long id) {
+        Ciudadano ciudadano;
 
         try {
-            bombero = bomberoService.findByID(id);
+            ciudadano = ciudadanoService.findByID(id);
         }catch(NoSuchElementException e){
-            return new ResponseEntity<String>("Bombero no encontrado", HttpStatus.NOT_FOUND);
+            return new ResponseEntity<String>("Ciudadano no encontrado", HttpStatus.NOT_FOUND);
         }
 
-        return ResponseEntity.ok(bombero);
+        return ResponseEntity.ok(ciudadano);
 
     }
 
-
     @PutMapping("/{id}")
-    public ResponseEntity<String> actualizarBombero(@PathVariable long id, @RequestBody Bombero bombero) {
+    public ResponseEntity<String> actualizarCiudadano(@PathVariable long id, @RequestBody Ciudadano ciudadano) {
         try {
-            Bombero nuevoBombero = bomberoService.update(bombero, id);
+            Ciudadano nuevoCiudadano = ciudadanoService.update(ciudadano, id);
             return ResponseEntity.ok("Actualizado con éxito");
         } catch (NoSuchElementException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body("Bombero no encontrado");
+                    .body("Ciudadano no encontrado");
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(e.getMessage());
@@ -78,14 +77,14 @@ public class BomberoController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> eliminarBombero(@PathVariable long id) {
+    public ResponseEntity<String> eliminarCiudadano(@PathVariable long id) {
 
         try {
-            bomberoService.delete(id);
-            return ResponseEntity.ok("Bombero eliminado con éxito.");
+            ciudadanoService.delete(id);
+            return ResponseEntity.ok("Ciudadano eliminado con éxito.");
         } catch (NoSuchElementException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body("Bombero no encontrado");
+                    .body("Ciudadano no encontrado");
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(e.getMessage());
@@ -93,16 +92,16 @@ public class BomberoController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("Error interno del servidor.");
         }
-
     }
 
-    @PostMapping("/{bomberoId}/asignar-credencial/{credencialId}")
-    public ResponseEntity<String> asignarCredencial(@PathVariable int bomberoId, @PathVariable int credencialId) {
+    @PostMapping("/{ciudadanoId}/asignar-credencial/{credencialId}")
+    public ResponseEntity<String> asignarCredencial(@PathVariable int ciudadanoId, @PathVariable int credencialId) {
         try {
-            bomberoService.asignarCredencial(bomberoId, credencialId);
-            return ResponseEntity.ok("Credencial asignada al bombero exitosamente");
+            ciudadanoService.asignarCredencial(ciudadanoId, credencialId);
+            return ResponseEntity.ok("Credencial asignada al Ciudadano exitosamente");
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         }
     }
+
 }

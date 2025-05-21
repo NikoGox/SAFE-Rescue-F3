@@ -1,4 +1,4 @@
-package com.SAFE_Rescue.API_Administrador.modelo;
+package com.SAFE_Rescue.API_Ciudadano.modelo;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -6,7 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "Credencial")
+@Table(name = "credencial_ciudadana")
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
@@ -26,10 +26,7 @@ public class Credencial {
     private int intentosFallidos = 0;
 
     @Column(nullable = false)
-    private boolean activo = true;
+    private boolean activo;
 
-    @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "rol_id", referencedColumnName = "id")
-    private Rol rol;
 
 }
