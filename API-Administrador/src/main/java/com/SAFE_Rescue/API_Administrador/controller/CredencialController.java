@@ -1,5 +1,6 @@
 package com.SAFE_Rescue.API_Administrador.controller;
 
+import com.SAFE_Rescue.API_Administrador.modelo.Login;
 import com.SAFE_Rescue.API_Administrador.service.CredencialService;
 import com.SAFE_Rescue.API_Administrador.modelo.Credencial;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,7 +12,7 @@ import java.util.List;
 import java.util.NoSuchElementException;
 
 @RestController
-@RequestMapping("/api/v1/credenciales")
+@RequestMapping("/api-administrador/v1/credenciales")
 public class CredencialController {
 
     @Autowired
@@ -30,15 +31,12 @@ public class CredencialController {
     @PostMapping
     public ResponseEntity<String> agregarCredencial(@RequestBody Credencial credencial) {
         try {
-            credencialService.validarCredencial(credencial);
-            Credencial nuevaCredencial = credencialService.save(credencial);
+            credencialService.save(credencial);
             return ResponseEntity.status(HttpStatus.CREATED).body("Credencial creada con éxito.");
         } catch (RuntimeException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Error interno del servidor.");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error interno del servidor.");
         }
     }
 
@@ -77,9 +75,41 @@ public class CredencialController {
     @DeleteMapping("/{id}")
     public ResponseEntity<String> eliminarCredencial(@PathVariable long id) {
 
-        credencialService.delete(id);
-        return ResponseEntity.ok("Credencial eliminada con éxito.");
+        try {
+            credencialService.delete(id);
+            return ResponseEntity.ok("Credencial eliminada con éxito.");
+        } catch (NoSuchElementException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body("Credencial no encontrada");
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error interno del servidor.");
+        }
+
     }
 
+    @PostMapping("/login")
+    public ResponseEntity<String> login(@RequestBody Login login) {
+        boolean isAuthenticated = credencialService.verificarCredenciales(login.getCorreo(), login.getContrasenia());
+
+        if (isAuthenticated) {
+            return ResponseEntity.ok("Login exitoso");
+        } else {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Credenciales incorrectas");
+        }
+    }
+
+    @PostMapping("/{credencialId}/asignar-rol/{rolId}")
+    public ResponseEntity<String> asignarRol(@PathVariable int credencialId,@PathVariable int rolId) {
+        try {
+            credencialService.asignarRol(credencialId,rolId);
+            return ResponseEntity.ok("Rol asignada al credencial exitosamente");
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        }
+    }
 
 }

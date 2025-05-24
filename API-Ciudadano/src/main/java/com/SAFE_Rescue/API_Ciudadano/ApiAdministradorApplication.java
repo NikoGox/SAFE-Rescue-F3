@@ -1,4 +1,4 @@
-package com.SAFE_Rescue.API_Administrador;
+package com.SAFE_Rescue.API_Ciudadano;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

@@ -1,9 +1,7 @@
-package com.SAFE_Rescue.API_Administrador.service;
+package com.SAFE_Rescue.API_Ciudadano.service;
 
-import com.SAFE_Rescue.API_Administrador.modelo.Rol;
-import com.SAFE_Rescue.API_Administrador.repository.CredencialRepository;
-import com.SAFE_Rescue.API_Administrador.modelo.Credencial;
-import com.SAFE_Rescue.API_Administrador.repository.RolRepository;
+import com.SAFE_Rescue.API_Ciudadano.repository.CredencialRepository;
+import com.SAFE_Rescue.API_Ciudadano.modelo.Credencial;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,9 +19,6 @@ public class CredencialService {
     @Autowired
     private CredencialRepository credencialRepository;
 
-    @Autowired
-    private RolRepository rolRepository;
-
     public List<Credencial> findAll(){
         return credencialRepository.findAll();
     }
@@ -35,10 +30,6 @@ public class CredencialService {
 
     public Credencial save(Credencial credencial) {
         try {
-            Rol rol = rolRepository.findById(credencial.getRol().getId())
-                    .orElseThrow(() -> new RuntimeException("Rol no encontrado"));
-
-            credencial.setRol(rol);
 
             return credencialRepository.save(credencial);
         } catch (DataIntegrityViolationException e) {
@@ -79,7 +70,7 @@ public class CredencialService {
             return credencialRepository.save(antiguaCredencial);
 
         } catch (Exception e) {
-            throw new RuntimeException("Error al actualizar el bombero: " + e.getMessage());
+            throw new RuntimeException("Error al actualizar el Ciudadano: " + e.getMessage());
         }
     }
 
@@ -94,13 +85,12 @@ public class CredencialService {
             credencialVacia.setContrasenia("");
             credencialVacia.setCorreo("");
             credencialVacia.setActivo(false);
-            credencialVacia.setRol(null);
             credencialVacia.setIntentosFallidos(0);
 
             credencialRepository.save(credencialVacia);
 
         } catch (Exception e) {
-            throw new RuntimeException("Error al encontrar bombero: " + e.getMessage());
+            throw new RuntimeException("Error al encontrar Credencial: " + e.getMessage());
         }
     }
 
@@ -117,17 +107,5 @@ public class CredencialService {
         return false;
     }
 
-
-    public void asignarRol(long credencialId,int rolId) {
-        Rol rol = rolRepository.findById(rolId)
-                .orElseThrow(() -> new RuntimeException("Rol no encontrado"));
-
-        Credencial credencial = credencialRepository.findById(credencialId)
-                .orElseThrow(() -> new RuntimeException("Credencial no encontrada"));
-
-        credencial.setRol(rol);
-
-        credencialRepository.save(credencial);
-    }
 
 }

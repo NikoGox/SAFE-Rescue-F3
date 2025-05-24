@@ -1,7 +1,8 @@
-package com.SAFE_Rescue.API_Administrador.controller;
+package com.SAFE_Rescue.API_Ciudadano.controller;
 
-import com.SAFE_Rescue.API_Administrador.service.CredencialService;
-import com.SAFE_Rescue.API_Administrador.modelo.Credencial;
+import com.SAFE_Rescue.API_Ciudadano.modelo.Login;
+import com.SAFE_Rescue.API_Ciudadano.service.CredencialService;
+import com.SAFE_Rescue.API_Ciudadano.modelo.Credencial;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -11,7 +12,7 @@ import java.util.List;
 import java.util.NoSuchElementException;
 
 @RestController
-@RequestMapping("/api/v1/credenciales")
+@RequestMapping("/api-ciudadano/v1/credenciales")
 public class CredencialController {
 
     @Autowired
@@ -30,15 +31,12 @@ public class CredencialController {
     @PostMapping
     public ResponseEntity<String> agregarCredencial(@RequestBody Credencial credencial) {
         try {
-            credencialService.validarCredencial(credencial);
-            Credencial nuevaCredencial = credencialService.save(credencial);
+            credencialService.save(credencial);
             return ResponseEntity.status(HttpStatus.CREATED).body("Credencial creada con éxito.");
         } catch (RuntimeException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Error interno del servidor.");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error interno del servidor.");
         }
     }
 
@@ -79,6 +77,17 @@ public class CredencialController {
 
         credencialService.delete(id);
         return ResponseEntity.ok("Credencial eliminada con éxito.");
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<String> login(@RequestBody Login login) {
+        boolean isAuthenticated = credencialService.verificarCredenciales(login.getCorreo(), login.getContrasenia());
+
+        if (isAuthenticated) {
+            return ResponseEntity.ok("Login exitoso");
+        } else {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Credenciales incorrectas");
+        }
     }
 
 

@@ -9,7 +9,7 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.SAFE_Rescue</groupId>
-	<artifactId>API_Administrador</artifactId>
+	<artifactId>API_Ciudadano</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>API_Administrador</name>
 	<description>Desarrollo de API Administrador para proyecto backend para software SAFE Rescue </description>

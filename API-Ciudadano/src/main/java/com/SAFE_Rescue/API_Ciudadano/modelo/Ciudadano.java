@@ -1,4 +1,4 @@
-package com.SAFE_Rescue.API_Administrador.modelo;
+package com.SAFE_Rescue.API_Ciudadano.modelo;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -8,11 +8,11 @@ import lombok.NoArgsConstructor;
 import java.util.Date;
 
 @Entity
-@Table(name = "Bombero")
+@Table(name = "Ciudadano")
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
-public class Bombero {
+public class Ciudadano {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -35,9 +35,6 @@ public class Bombero {
 
     @Column(nullable = false)
     private Date fecha_registro;
-
-    @Column(unique = true,length = 80,nullable = false)
-    private String correo;
 
     @Column(unique = true,length = 9,nullable = false)
     private Long telefono;

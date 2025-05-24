@@ -1,4 +1,4 @@
-package com.SAFE_Rescue.API_Administrador.modelo;
+package com.SAFE_Rescue.API_Ciudadano.modelo;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -6,7 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "Credencial")
+@Table(name = "credencial_ciudadana")
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
@@ -16,19 +16,17 @@ public class Credencial {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
+    @Column(unique = true,length = 80,nullable = false)
+    private String correo;
+
     @Column(length = 16, nullable = false)
     private String contrasenia;
 
-    @Column
+    @Column(length = 1, nullable = true)
     private int intentosFallidos = 0;
 
+    @Column(nullable = false)
+    private boolean activo;
 
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "estado_id", referencedColumnName = "id")
-    private Estado estado;
-
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "rol_id", referencedColumnName = "id")
-    private Rol rol;
 
 }
