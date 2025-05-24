@@ -9,8 +9,6 @@ public interface BomberoRepository extends JpaRepository<Bombero , Long> {
 
     public boolean existsByRun(Long run);
 
-    public boolean existsByCorreo(String correo);
-
     public boolean existsByTelefono(Long telefono);
 
 }

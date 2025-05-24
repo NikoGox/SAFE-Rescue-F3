@@ -36,9 +36,6 @@ public class Bombero {
     @Column(nullable = false)
     private Date fecha_registro;
 
-    @Column(unique = true,length = 80,nullable = false)
-    private String correo;
-
     @Column(unique = true,length = 9,nullable = false)
     private Long telefono;
 
